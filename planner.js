@@ -1,264 +1,129 @@
+import java.util.Scanner;
+import java.io.*;
+import java.util.Arrays;
 
-var Cal = function(divId) {
+public class Planner {
+	public static void main(String args[]) {
 
-    //Store div id
-    
-    this.divId = divId;
-    
-    // Days of week, starting on Sunday
-    
-    this.DaysOfWeek = [
-    
-    'Sun',
-    
-    'Mon',
-    
-    'Tue',
-    
-    'Wed',
-    
-    'Thu',
-    
-    'Fri',
-    
-    'Sat'
-    
-    ];
-    
-    // Months, stating on January
-    
-    this.Months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' ];
-    
-    // Set the current month, year
-    
-    var d = new Date();
-    
-    this.currMonth = d.getMonth();
-    
-    this.currYear = d.getFullYear();
-    
-    this.currDay = d.getDate();
-    
-    };
-    
-    //if day has an event, display event (dropdown box, inside datebox)
-    
-    // Goes to next month
-    
-    Cal.prototype.nextMonth = function() {
-    
-    if ( this.currMonth == 11 ) {
-    
-    this.currMonth = 0;
-    
-    this.currYear = this.currYear + 1;
-    
-    }
-    
-    else {
-    
-    this.currMonth = this.currMonth + 1;
-    
-    }
-    
-    this.showcurr();
-    
-    };
-    
-    // Goes to previous month
-    
-    Cal.prototype.previousMonth = function() {
-    
-    if ( this.currMonth == 0 ) {
-    
-    this.currMonth = 11;
-    
-    this.currYear = this.currYear - 1;
-    
-    }
-    
-    else {
-    
-    this.currMonth = this.currMonth - 1;
-    
-    }
-    
-    this.showcurr();
-    
-    };
-    
-    // Show current month
-    
-    Cal.prototype.showcurr = function() {
-    
-    this.showMonth(this.currYear, this.currMonth);
-    
-    };
-    
-    // Show month (year, month)
-    
-    Cal.prototype.showMonth = function(y, m) {
-    
-    var d = new Date()
-    
-    // First day of the week in the selected month
-    
-    , firstDayOfMonth = new Date(y, m, 1).getDay()
-    
-    // Last day of the selected month
-    
-    , lastDateOfMonth = new Date(y, m+1, 0).getDate()
-    
-    // Last day of the previous month
-    
-    , lastDayOfLastMonth = m == 0 ? new Date(y-1, 11, 0).getDate() : new Date(y, m, 0).getDate();
-    
-    var html = '<table>';
-    
-    // Write selected month and year
-    
-    html += '<thead><tr>';
-    
-    html += '<td colspan="7">' + this.Months[m] + ' ' + y + '</td>';
-    
-    html += '</tr></thead>';
-    
-    // Write the header of the days of the week
-    
-    html += '<tr class="days">';
-    
-    for(var i=0; i < this.DaysOfWeek.length;i++) {
-    
-    html += '<td>' + this.DaysOfWeek[i] + '</td>';
-    
-    }
-    
-    html += '</tr>';
-    
-    // Write the days
-    
-    var i=1;
-    
-    do {
-    
-    var dow = new Date(y, m, i).getDay();
-    
-    // If Sunday, start new row
-    
-    if ( dow == 0 ) {
-    
-    html += '<tr>';
-    
-    }
-    
-    // If not Sunday but first day of the month
-    
-    // it will write the last days from the previous month
-    
-    else if ( i == 1 ) {
-    
-    html += '<tr>';
-    
-    var k = lastDayOfLastMonth - firstDayOfMonth+1;
-    
-    for(var j=0; j < firstDayOfMonth; j++) {
-    
-    html += '<td class="not-current">' + k + '</td>';
-    
-    k++;
-    
-    }
-    
-    }
-    
-    // Write the current day in the loop
-    
-    var chk = new Date();
-    
-    var chkY = chk.getFullYear();
-    
-    var chkM = chk.getMonth();
-    
-    if (chkY == this.currYear && chkM == this.currMonth && i == this.currDay) {
-    
-    html += '<td class="today">' + i + '</td>';
-    
-    } else {
-    
-    html += '<td class="normal">' + i + '</td>';
-    
-    }
-    
-    // If Saturday, closes the row
-    
-    if ( dow == 6 ) {
-    
-    html += '</tr>';
-    
-    }
-    
-    // If not Saturday, but last day of the selected month
-    
-    // it will write the next few days from the next month
-    
-    else if ( i == lastDateOfMonth ) {
-    
-    var k=1;
-    
-    for(dow; dow < 6; dow++) {
-    
-    html += '<td class="not-current">' + k + '</td>';
-    
-    k++;
-    
-    }
-    
-    }
-    
-    i++;
-    
-    }while(i <= lastDateOfMonth);
-    
-    // Closes table
-    
-    html += '</table>';
-    
-    // Write HTML to the div
-    
-    document.getElementById(this.divId).innerHTML = html;
-    
-    };
-    
-    // On Load of the window
-    
-    window.onload = function() {
-    
-    // Start calendar
-    
-    var c = new Cal("divCal");
-    
-    c.showcurr();
-    
-    // Bind next and previous button clicks
-    
-    getId('btnNext').onclick = function() {
-    
-    c.nextMonth();
-    
-    };
-    
-    getId('btnPrev').onclick = function() {
-    
-    c.previousMonth();
-    
-    };
-    
-    }
-    
-    // Get element by id
-    
-    function getId(id) {
-    
-    return document.getElementById(id);
-    
-    }
+		Scanner kb = new Scanner(System.in);
+		File file = new File("calendar.txt");
+		boolean running = true;
+		String event = new String();
+
+		int month;
+
+
+		System.out.println("Welcome to the Samuel Dayplanner! Let's plan stuff!");
+		System.out.println();
+
+
+		//search in current directory for existing file, if not, set up or goodbye
+		if (!file.exists()) {
+			System.out.println("The Samuel Dayplanner cannot find calendar.txt in the current directory. It is required for planning! Would you like to create one? y/n?");
+
+			char create = kb.next().charAt(0);
+
+			if (create=='y') {
+				try {
+
+					file.createNewFile();
+
+					RandomAccessFile accessor = new RandomAccessFile (file, "rw");
+					accessor.seek(0);
+					accessor.writeBytes(System.getProperty("line.separator"));
+
+				}
+				catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			else {
+				System.out.println("Alright, try again later.");
+				System.exit(1);
+			}
+
+		}
+
+		//Print Current day's Schedule
+		Reader.printToday(file);
+
+		while (running) {
+			System.out.println("Please enter a command. Type help for options.");
+			//Wait for user input
+			String command[] = kb.nextLine().split(" ", -2);
+
+			switch (command[0]) {
+				case "today": 
+					Reader.printToday(file);
+					break;
+				case "help": 
+					help();
+					break;
+				case "exit": 
+					running = false;
+					break;
+				case "week": 
+					Reader.printWeek(file);
+					break;
+				case "print": 
+					month = monthFormatter(command[1]);
+					Reader.printDay(month, Integer.parseInt(command[2]), Integer.parseInt(command[3]), file);
+					break;
+				case "add": 
+					month = monthFormatter(command[1]);
+					Writer.addEvent(month, Integer.parseInt(command[2]), Integer.parseInt(command[3]), file);
+					break;
+				case "remove":
+					month = monthFormatter(command[1]);
+					System.out.println("Please enter the event you'd like to delete :");
+					event = kb.nextLine();
+					Writer.deleteEvent(month, Integer.parseInt(command[2]), Integer.parseInt(command[3]), event, file);
+					break;
+				case "clear":
+					month = monthFormatter(command[1]);
+					Writer.clear(month, Integer.parseInt(command[2]), Integer.parseInt(command[3]), file);
+				case "recurrent":
+					if (command[1].equals("add")) {
+							month = monthFormatter(command[2]);
+							Writer.addRecurrentEvent(month, Integer.parseInt(command[3]), Integer.parseInt(command[4]), command[5], file);
+						break;
+					}
+					else if (command[1].equals("delete")) {
+							System.out.println("Please enter the event you'd like to delete :");
+							event = kb.nextLine();
+							Writer.deleteEvent(event, file);
+						break;
+					}
+					else {
+						break;
+					}	
+				default: 
+					break;
+			}
+		}
+
+	}
+
+	public static void help() {
+		System.out.println();
+		System.out.println("To exit, type 'exit'.");
+		System.out.println("To print today's schedule, enter 'today'.");
+		System.out.println("To print this week's schedule, enter 'week'.");
+		System.out.println("To print this a certain day's schedule, enter that day as 'print MM DD YYYY'.");
+		System.out.println("To add an event to the schedule, type 'add' followed by the date you want it to take place on (ex. 'add MM DD YYYY').");
+		System.out.println("To add a recurrent event, type 'recurrent add' and the date you'd like the reccurrence to stop and the the day you want it to recur ex:'reccurrent add MM DD YYYY Monday'");
+		System.out.println("To delete a singular event, type 'remove' followed by the date of the item you'd like to remove (ex 'remove MM DD YYYY'). You will be prompted next to give the event.");
+		System.out.println("To delete a recurrent event, print 'recurrent delete'");
+		System.out.println("To clear a day's schedule, type 'clear' and the date you want to clear (ex. clear 12 22 2016)");
+		System.out.println();
+	}
+
+	public static int monthFormatter(String input) {
+		if (input.charAt(0)=='0') {
+			return Character.getNumericValue(input.charAt(1));
+		}
+		else {
+			return Integer.parseInt(input);
+		}
+	}
+}
