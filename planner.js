@@ -1,279 +1,179 @@
+var currentDay = $("#currentDay")
+var nine = $(".nineAm")
+var ten = $(".tenAm")
+var eleven = $(".elevenAm")
+var twelve = $(".twelveAm")
+var one = $(".onePm")
+var two = $(".twoPm")
+var three = $(".threePm")
+var four = $(".fourPm")
+var five = $(".fivePm")
+var saveBtn = $(".saveBtn")
+var checkBtn = $(".checkBtn")
+var nineBtn = $(".nineBtn")
+var tenBtn = $(".tenBtn")
+var elevenBtn = $(".elevenBtn")
+var twelveBtn = $(".twelveBtn")
+var oneBtn = $(".oneBtn")
+var twoBtn = $(".twoBtn")
+var threeBtn = $(".threeBtn")
+var fourBtn = $(".fourBtn")
+var fiveBtn = $(".fiveBtn")
 
 
-var curday = function(sp){
-    today = new Date();
-    var dd = today.getDate();
-    var mm = today.getMonth()+1; //As January is 0.
-    var yyyy = today.getFullYear();
-    
-    if(dd<10) dd='0'+dd;
-    if(mm<10) mm='0'+mm;
-    return (mm+sp+dd+sp+yyyy);
-    };
-    console.log(curday('/'));
-    console.log(curday('-'));
+    // Global Arrays // 
+var hours = [9,10,11,12,13,14,15,16,17]
+var hoursElArray = [nine,ten,eleven,twelve,one,two,three,four,five]
 
-    
-var Cal = function(divId) {
+    // Today's Date //
+$(currentDay).text(moment().format("dddd, MMMM Do"))
 
-    //Store div id
-    
-    this.divId = divId;
-    
-    // Days of week, starting on Sunday
-    
-    this.DaysOfWeek = [
-    
-    'Sun',
-    
-    'Mon',
-    
-    'Tue',
-    
-    'Wed',
-    
-    'Thu',
-    
-    'Fri',
-    
-    'Sat'
-    
-    ];
-    
-    // Months, stating on January
-    
-    this.Months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' ];
-    
-    // Set the current month, year
-    
-    var d = new Date();
-    
-    this.currMonth = d.getMonth();
-    
-    this.currYear = d.getFullYear();
-    
-    this.currDay = d.getDate();
-    
-    };
-    
-    //if day has an event, display event (dropdown box, inside datebox)
-    
-    // Goes to next month
-    
-    Cal.prototype.nextMonth = function() {
-    
-    if ( this.currMonth == 11 ) {
-    
-    this.currMonth = 0;
-    
-    this.currYear = this.currYear + 1;
-    
-    }
-    
-    else {
-    
-    this.currMonth = this.currMonth + 1;
-    
-    }
-    
-    this.showcurr();
-    
-    };
-    
-    // Goes to previous month
-    
-    Cal.prototype.previousMonth = function() {
-    
-    if ( this.currMonth == 0 ) {
-    
-    this.currMonth = 11;
-    
-    this.currYear = this.currYear - 1;
-    
-    }
-    
-    else {
-    
-    this.currMonth = this.currMonth - 1;
-    
-    }
-    
-    this.showcurr();
-    
-    };
-    
-    // Show current month
-    
-    Cal.prototype.showcurr = function() {
-    
-    this.showMonth(this.currYear, this.currMonth);
-    
-    };
-    
-    // Show month (year, month)
-    
-    Cal.prototype.showMonth = function(y, m) {
-    
-    var d = new Date()
-    
-    // First day of the week in the selected month
-    
-    , firstDayOfMonth = new Date(y, m, 1).getDay()
-    
-    // Last day of the selected month
-    
-    , lastDateOfMonth = new Date(y, m+1, 0).getDate()
-    
-    // Last day of the previous month
-    
-    , lastDayOfLastMonth = m == 0 ? new Date(y-1, 11, 0).getDate() : new Date(y, m, 0).getDate();
-    
-    var html = '<table>';
-    
-    // Write selected month and year
-    
-    html += '<thead><tr>';
-    
-    html += '<td colspan="7">' + this.Months[m] + ' ' + y + '</td>';
-    
-    html += '</tr></thead>';
-    
-    // Write the header of the days of the week
-    
-    html += '<tr class="days">';
-    
-    for(var i=0; i < this.DaysOfWeek.length;i++) {
-    
-    html += '<td>' + this.DaysOfWeek[i] + '</td>';
-    
-    }
-    
-    html += '</tr>';
-    
-    // Write the days
-    
-    var i=1;
-    
-    do {
-    
-    var dow = new Date(y, m, i).getDay();
-    
-    // If Sunday, start new row
-    
-    if ( dow == 0 ) {
-    
-    html += '<tr>';
-    
-    }
-    
-    // If not Sunday but first day of the month
-    
-    // it will write the last days from the previous month
-    
-    else if ( i == 1 ) {
-    
-    html += '<tr>';
-    
-    var k = lastDayOfLastMonth - firstDayOfMonth+1;
-    
-    for(var j=0; j < firstDayOfMonth; j++) {
-    
-    html += '<td class="not-current">' + k + '</td>';
-    
-    k++;
-    
-    }
-    
-    }
-    
-    // Write the current day in the loop
-    
-    var chk = new Date();
-    
-    var chkY = chk.getFullYear();
-    
-    var chkM = chk.getMonth();
-    
-    if (chkY == this.currYear && chkM == this.currMonth && i == this.currDay) {
-    
-    html += '<td class="today">' + i + '</td>';
-    
+    // Checking Past,Present,Future Hours For Class Additions //
+var currentHour = moment().hour() 
+for (let i = 0; i < 9; i++) {
+    if (currentHour === hours[i]){
+        $(hoursElArray[i]).addClass("present")
+    } else if (currentHour > hours[i]) {
+        $(hoursElArray[i]).addClass("past")
     } else {
-    
-    html += '<td class="normal">' + i + '</td>';
-    
+        $(hoursElArray[i]).addClass("future")
     }
-    
-    // If Saturday, closes the row
-    
-    if ( dow == 6 ) {
-    
-    html += '</tr>';
-    
+}
+
+    // Retrieving And Populating To Page From LocalStorage //
+$(window).on("load", function() {
+    for (let i = 0; i < 9; i++) {
+        var getData = localStorage.getItem("Note" + i)
+        if (getData != null){
+            $("#text" + i).text(getData)
+        }
     }
+});
+    var nineNotes = localStorage.getItem("nineNotes")
+    $(".nineAm").text(nineNotes)
     
-    // If not Saturday, but last day of the selected month
+    var tenNotes = localStorage.getItem("tenNotes")
+    $(".tenAm").text(tenNotes)
     
-    // it will write the next few days from the next month
+    var elevenNotes = localStorage.getItem("elevenNotes")
+    $(".elevenAm").text(elevenNotes)
     
-    else if ( i == lastDateOfMonth ) {
+    var twelveNotes = localStorage.getItem("twelveNotes")
+    $(".twelveAm").text(twelveNotes)
     
-    var k=1;
+    var oneNotes = localStorage.getItem("oneNotes")
+    $(".onePm").text(oneNotes)
     
-    for(dow; dow < 6; dow++) {
+    var twoNotes = localStorage.getItem("twoNotes")
+    $(".twoPm").text(twoNotes)
     
-    html += '<td class="not-current">' + k + '</td>';
+    var threeNotes = localStorage.getItem("threeNotes")
+    $(".threePm").text(threeNotes)
     
-    k++;
+    var fourNotes = localStorage.getItem("fourNotes")
+    $(".fourPm").text(fourNotes)
     
+    var fiveNotes = localStorage.getItem("fiveNotes")
+    $(".fivePm").text(fiveNotes)
+    
+    
+
+    // EventListeners For Saving To LocalStorage //
+$(saveBtn).click(function(){
+    var save = $("#text" + $(this).attr("id")).val()
+    if (save.length){
+        localStorage.setItem("Note" + $(this).attr("id"), save)
     }
+});
+
+    var nineData = $(this).siblings(".nineAm").val()
+    var tenData = $(this).siblings(".tenAm").val();
+    var elevenData = $(this).siblings(".elevenAm").val();
+    var twelveData = $(this).siblings(".twelveAm").val();
+    var oneData = $(this).siblings(".onePm").val();
+    var twoData = $(this).siblings(".twoPm").val();
+    var threeData = $(this).siblings(".threePm").val();
+    var fourData = $(this).siblings(".fourPm").val();
+    var fiveData = $(this).siblings(".fivePm").val();
     
+    if(nineData !== undefined){
+        localStorage.setItem("nineNotes", nineData)
     }
-    
-    i++;
-    
-    }while(i <= lastDateOfMonth);
-    
-    // Closes table
-    
-    html += '</table>';
-    
-    // Write HTML to the div
-    
-    document.getElementById(this.divId).innerHTML = html;
-    
-    };
-    
-    // On Load of the window
-    
-    window.onload = function() {
-    
-    // Start calendar
-    
-    var c = new Cal("divCal");
-    
-    c.showcurr();
-    
-    // Bind next and previous button clicks
-    
-    getId('btnNext').onclick = function() {
-    
-    c.nextMonth();
-    
-    };
-    
-    getId('btnPrev').onclick = function() {
-    
-    c.previousMonth();
-    
-    };
-    
+if(tenData !== undefined){
+        localStorage.setItem("tenNotes", tenData)
     }
+    if(elevenData !== undefined){
+        localStorage.setItem("elevenNotes", elevenData)
+     }
+    if(twelveData !== undefined){
+         localStorage.setItem("twelveNotes", twelveData)
+     }
+     if(oneData !== undefined){
+         localStorage.setItem("oneNotes", oneData)
+     }
+     if(twoData !== undefined){
+         localStorage.setItem("twoNotes", twoData)
+     }
+     if(threeData !== undefined){
+         localStorage.setItem("threeNotes", threeData)
+     }
+     if(fourData !== undefined){
+         localStorage.setItem("fourNotes", fourData)
+     }
+     if(fiveData !== undefined){
+         localStorage.setItem("fiveNotes", fiveData)
+     }    
     
-    // Get element by id
     
-    function getId(id) {
-    
-    return document.getElementById(id);
-    
-    }
+
+    // EventListeners For Clearing From LocalStorage & Page //
+    $(checkBtn).click(function(){
+        localStorage.setItem("Note" + $(this).attr("data-id"), "")
+        $("#text" + $(this).attr("data-id")).val(null)
+    })
+
+$(nineBtn).click(function(){
+     nine.val("")
+     localStorage.setItem("nineNotes", "")
+ });
+ $(tenBtn).click(function(){
+     ten.val("")
+     localStorage.setItem("tenNotes", "")
+ });
+ $(elevenBtn).click(function(){
+     eleven.val("")
+     localStorage.setItem("elevenNotes", "")
+ });
+ $(twelveBtn).click(function(){
+     twelve.val("")
+     localStorage.setItem("twelveNotes", "")
+ });
+ $(oneBtn).click(function(){
+     one.val("")
+     localStorage.setItem("oneNotes", "")
+ });
+ $(twoBtn).click(function(){
+     two.val("")
+     localStorage.setItem("twoNotes", "")
+ });
+ $(threeBtn).click(function(){
+     three.val("")
+     localStorage.setItem("threeNotes", "")
+ });
+ $(fourBtn).click(function(){
+     four.val("")
+     localStorage.setItem("fourNotes", "")
+ });
+ $(fiveBtn).click(function(){
+     five.val("")
+     localStorage.setItem("fiveNotes", "")
+ });
+  
+
+
+
+
+
+
+
+
